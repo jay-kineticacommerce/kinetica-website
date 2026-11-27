@@ -80,7 +80,10 @@
       </div>
 
       <div class="reveal">
-        <form id="contact-form">
+        <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <input type="hidden" name="subject" value="New website enquiry (%{submissionId})">
+          <p hidden><label>Leave this field empty <input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></p>
           <div class="field">
             <label for="name">Your name</label>
             <input type="text" id="name" name="name" required>
@@ -102,7 +105,7 @@
             <textarea id="message" name="message" required></textarea>
           </div>
           <button type="submit" class="btn btn-solid" style="width:100%; justify-content:center;">Send message <span class="btn-arrow">→</span></button>
-          <p class="form-note" id="form-status">This opens a pre-filled email in your default mail app — nothing is sent automatically.</p>
+          <p class="form-note" id="form-status" role="status" aria-live="polite">We use these details only to reply to your enquiry.</p>
         </form>
       </div>
 

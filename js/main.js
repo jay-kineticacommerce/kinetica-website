@@ -33,35 +33,28 @@ document.addEventListener('DOMContentLoaded', () => {
     revealEls.forEach(el => el.classList.add('is-visible'));
   }
 
-  // Contact form — compiles input into a pre-filled mailto link (no backend required)
+  // Contact form — sends the enquiry to Netlify Forms without leaving the page
   const form = document.querySelector('#contact-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    const status = document.querySelector('#form-status');
+    const button = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const data = new FormData(form);
-      const name = data.get('name') || '';
-      const company = data.get('company') || '';
-      const email = data.get('email') || '';
-      const channels = data.get('channels') || '';
-      const message = data.get('message') || '';
-
-      const subject = `New inquiry from ${name}${company ? ' (' + company + ')' : ''}`;
-      const bodyLines = [
-        `Name: ${name}`,
-        `Company: ${company}`,
-        `Reply-to email: ${email}`,
-        `Channels: ${channels}`,
-        '',
-        'Message:',
-        message
-      ];
-      const body = bodyLines.join('\n');
-      const mailto = `mailto:jay@kineticacommerce.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-      const status = document.querySelector('#form-status');
-      window.location.href = mailto;
-      if (status) {
-        status.textContent = 'Opening your email client with this message pre-filled — just hit send.';
+      button.disabled = true;
+      status.textContent = 'Sending your message…';
+      try {
+        const res = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form)).toString()
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        form.reset();
+        status.textContent = 'Thanks, your message has been sent. We will get back to you.';
+      } catch (err) {
+        status.textContent = 'Your message could not be sent. Please email jay@kineticacommerce.com instead.';
+      } finally {
+        button.disabled = false;
       }
     });
   }
